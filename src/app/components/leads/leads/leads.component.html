@@ -1,0 +1,175 @@
+<div class="container-fluid p-4">
+  <h2 class="text-center mb-4">Lista de Leads</h2>
+
+  <!-- Filtros -->
+  <div class="filters mb-3 d-flex flex-wrap align-items-center">
+    <button class="add-lead-button me-2 btn btn-success" (click)="abrirModalCrearLead()">
+      +
+    </button>
+
+    <input type="text" [(ngModel)]="filtroUsuario" placeholder="Buscar usuario"
+      class="form-control me-2 filter-input" />
+
+    <select [(ngModel)]="filtroEstado" class="form-select me-2 filter-select">
+      <option value="">Todos los estados</option>
+      <option *ngFor="let estado of estados" [value]="estado">{{ estado }}</option>
+    </select>
+
+    <input type="datetime-local" [(ngModel)]="fechaInicio" class="form-control me-2 filter-date" />
+
+    <input type="datetime-local" [(ngModel)]="fechaFin" class="form-control me-2 filter-date" />
+
+    <button class="btn btn-primary filter-button" (click)="filtrarLeads()">
+      Filtrar
+    </button>
+  </div>
+
+  <!-- Número de resultados -->
+  <div class="mb-2 text-start text-secondary">
+    <strong>{{ leadsFiltrados.length }} resultados</strong>
+    <div class="der">
+      <input class="separador" type="checkbox" id="filtroHoy" [(ngModel)]="mostrarSoloHoy" (change)="filtrarLeadsPorHoy()" />
+      <label for="filtroHoy">Mostrar SOLO los añadidos hoy</label>
+    </div>
+  </div>
+
+  <!-- Tabla -->
+  <div class="table-responsive">
+    <table class="table table-bordered table-hover text-center">
+      <thead class="table-dark">
+        <tr>
+          <th>¿🗑?</th>
+          <th>Usuario</th>
+          <th>Estado</th>
+          <th>Seguimiento</th>
+          <th>Fecha de Apertura</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let lead of leadsFiltrados" (click)="abrirLead(lead.id)" class="lead-row">
+          <td>
+            <button class="btn btn-sm btn-outline-danger" (click)="abrirModalEliminarLead(lead.id, $event)">
+              🗑
+            </button>
+          </td>
+          <td class="position-relative">
+            &#64;{{ lead.usuario }}
+            <button class="btn btn-sm btn-outline-secondary edit-pencil" (click)="abrirModalEditarUsuario(lead)">
+              ✎
+            </button>
+          </td>
+
+          <td>
+            <select class="form-select form-select-sm" [(ngModel)]="lead.estado" (change)="cambiarEstadoLead(lead)">
+              <option *ngFor="let estado of estados" [value]="estado">{{ estado }}</option>
+            </select>
+          </td>
+          <td>{{ lead.seguimiento || 'Sin seguimiento' }}</td>
+          <td>{{ lead.fecha_apertura | date:'medium' }}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Modal para eliminar lead -->
+  <div *ngIf="mostrarModalEliminar" class="modal fade show" tabindex="-1" style="display: block;"
+    aria-labelledby="modalEliminarLead" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="modalEliminarLead">Confirmar Eliminación</h5>
+          <button type="button" class="btn-close" (click)="cerrarModalEliminarLead()"></button>
+        </div>
+        <div class="modal-body">
+          <p>¿Estás seguro de que deseas eliminar este lead?</p>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" (click)="cerrarModalEliminarLead()">Cancelar</button>
+            <button type="button" class="btn btn-danger" (click)="eliminarLead()">Eliminar</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- Modal para elegir la fecha de seguimiento -->
+  <div *ngIf="mostrarModalSeguimiento" class="modal fade show" tabindex="-1" style="display: block;"
+    aria-labelledby="modalSeguimiento" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="modalSeguimiento">Establecer Fecha de Seguimiento</h5>
+          <button type="button" class="btn-close" (click)="cerrarModalSeguimiento()"></button>
+        </div>
+        <div class="modal-body">
+          <form (ngSubmit)="guardarFechaSeguimiento()">
+            <div class="mb-3">
+              <label for="fechaSeguimiento" class="form-label">Fecha de Seguimiento</label>
+              <input type="datetime-local" id="fechaSeguimiento" class="form-control" [(ngModel)]="fechaSeguimiento"
+                name="fechaSeguimiento" required />
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" (click)="cerrarModalSeguimiento()">Cancelar</button>
+              <button type="submit" class="btn btn-primary">Guardar</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal para editar usuario -->
+  <div *ngIf="mostrarModalEditarUsuario" class="modal fade show" tabindex="-1" style="display: block;"
+    aria-labelledby="modalEditarUsuario" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="modalEditarUsuario">Editar Nombre de Usuario</h5>
+          <button type="button" class="btn-close" (click)="cerrarModalEditarUsuario()"></button>
+        </div>
+        <div class="modal-body">
+          <form (ngSubmit)="guardarUsuarioEditado()">
+            <div class="mb-3">
+              <label for="usuarioEditado" class="form-label">Nombre de Usuario</label>
+              <input type="text" id="usuarioEditado" class="form-control" [(ngModel)]="usuarioEditado"
+                name="usuarioEditado" required />
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" (click)="cerrarModalEditarUsuario()">Cancelar</button>
+              <button type="submit" class="btn btn-primary">Guardar</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div>
+
+    <!-- Modal para crear un nuevo Lead -->
+    <div *ngIf="mostrarFormularioNuevoLead" class="modal fade show" tabindex="-1" style="display: block;"
+      aria-labelledby="modalCrearLead" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="modalCrearLead">Crear Nuevo Lead</h5>
+            <button type="button" class="btn-close" (click)="cerrarModalCrearLead()"></button>
+          </div>
+          <div class="modal-body">
+            <form (ngSubmit)="guardarNuevoLead()">
+              <div class="mb-3">
+                <label for="usuario" class="form-label">Usuario</label>
+                <input type="text" id="usuario" class="form-control" [(ngModel)]="nuevoLead.usuario" name="usuario"
+                  required />
+              </div>
+
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" (click)="cerrarModalCrearLead()">Cancelar</button>
+                <button type="submit" class="btn btn-primary">Guardar</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>

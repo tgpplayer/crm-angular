@@ -1,0 +1,84 @@
+.filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    align-items: center;
+    justify-content: space-between; /* Distribuye los elementos uniformemente */
+    width: 100%; /* Ocupa todo el ancho */
+}
+  
+  .filter-input,
+  .filter-select,
+  .filter-date {
+    min-width: 150px; /* Asegura un ancho mínimo razonable */
+    flex: 1;
+}
+  
+  .add-lead-button {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 24px;
+    margin-right: 10px; /* Ajuste para alineación */
+    cursor: pointer;
+    transition: transform 0.3s ease;
+}
+  
+  .add-lead-button:hover {
+    transform: scale(1.1);
+}
+
+.filter-button {
+    flex: 0 0 auto; /* Evita que se expanda como los demás filtros */
+  }
+  
+.add-lead-button {
+  flex: 0 0 auto; /* Evita que se expanda como los demás filtros */
+}
+
+/* Intensificar la sombra del modal */
+.modal-dialog {
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4); /* Sombra más intensa */
+}
+
+.modal-content {
+  background-color: #fff; /* Asegúrate de que el fondo del modal sea blanco */
+  border-radius: 8px; /* Puedes ajustar el radio de los bordes si lo deseas */
+}
+
+/* Lápiz a la derecha */
+.position-relative {
+  position: relative;
+}
+
+.edit-pencil {
+  position: absolute;
+  top: 50%;
+  right: 10px;
+  transform: translateY(-50%);
+}
+
+/* Centrar desplegables */
+
+.table td {
+  vertical-align: middle; /* Centra verticalmente el contenido */
+}
+
+.table .form-select {
+  text-align: center; /* Centra el texto en los desplegables */
+  text-align-last: center; /* Asegura que el texto seleccionado también esté centrado */
+}
+
+.separador {
+  margin-right: 5px;
+}
+
+.der {
+  float: right;
+}
